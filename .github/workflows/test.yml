@@ -43,16 +43,18 @@ jobs:
           PACT_BROKER_BASIC_AUTH_PASSWORD: pactbroker
           # Database
           PACT_BROKER_DATABASE_URL: sqlite:////tmp/pact_broker.sqlite
-          PACT_BROKER_DATABASE_CONNECT_MAX_RETRIES: 5
-        options: >-
-          --health-cmd "curl -sSf http://localhost:9292/diagnostic/status/heartbeat"
-          --health-retries 3
+        # options: >-
+        #   --health-cmd "curl -sSf http://localhost:9292/diagnostic/status/heartbeat"
+        #   --health-retries 3
 
     steps:
       - name: Ports
         run: |
-          sleep 30
           sudo lsof -i -nP | grep LISTEN
+      - name: Wait for the broker to start
+        run: wget -qO- https://raw.githubusercontent.com/eficode/wait-for/$WAIT_FOR_VERSION/wait-for | sh -s -- http://localhost:9292/diagnostic/status/heartbeat -t 30 -- echo "Database is up"
+        env:
+          WAIT_FOR_VERSION: 4df3f9262d84cab0039c07bf861045fbb3c20ab7 # v2.2.3
       - name: Check nginx is line
         run: |
           curl -sSf http://localhost:8080
@@ -64,7 +66,3 @@ jobs:
         run: |
           curl -sSf http://localhost:9292/diagnostic/status/heartbeat \
           || curl -sSf http://localhost:9292
-      - name: Wait for the database to start
-        run: wget -qO- https://raw.githubusercontent.com/eficode/wait-for/$WAIT_FOR_VERSION/wait-for | sh -s -- http://localhost:9292/diagnostic/status/heartbeat -t 30 -- echo "Database is up"
-        env:
-          WAIT_FOR_VERSION: 4df3f9262d84cab0039c07bf861045fbb3c20ab7 # v2.2.3
