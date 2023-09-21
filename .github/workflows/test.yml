@@ -44,7 +44,7 @@ jobs:
           # Database
           PACT_BROKER_DATABASE_URL: sqlite:////tmp/pact_broker.sqlite
         options: >-
-          --health-cmd "curl -sSf http://0.0.0.0:9292/diagnostic/status/heartbeat"
+          --health-cmd "curl -sSf http://0.0.0.0:9292"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -52,12 +52,11 @@ jobs:
     steps:
       - name: Ports
         run: |
-          sleep 30
           sudo lsof -i -nP | grep LISTEN
       - name: Check nginx is line
         run: |
           curl -sSf http://localhost:8080
       - name: Check broker is live
         run: |
-          curl -sSf http://localhost:9292/diagnostic/status/heartbeat \
-          || curl -sSf http://localhost:9292
+          curl -sSf http://0.0.0.0:9292/diagnostic/status/heartbeat \
+          || curl -sSf http://0.0.0.0:9292
