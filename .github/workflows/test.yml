@@ -45,10 +45,8 @@ jobs:
           PACT_BROKER_DATABASE_URL: sqlite:////tmp/pact_broker.sqlite
           PACT_BROKER_DATABASE_CONNECT_MAX_RETRIES: 5
         options: >-
-          --health-cmd "curl -sSf http://broker:9292/diagnostic/status/heartbeat"
-          --health-interval 10s
-          --health-timeout 30s
-          --health-retries 5
+          --health-cmd "curl -sSf http://localhost:9292/diagnostic/status/heartbeat"
+          --health-retries 3
 
     steps:
       - name: Ports
