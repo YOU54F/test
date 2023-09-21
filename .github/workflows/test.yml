@@ -32,22 +32,17 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-      # broker:
-      #   image: pactfoundation/pact-broker:latest
-      #   ports:
-      #     - "9292:9292"
-      #   env:
-      #     # Basic auth credentials for the Broker
-      #     PACT_BROKER_ALLOW_PUBLIC_READ: "true"
-      #     PACT_BROKER_BASIC_AUTH_USERNAME: pactbroker
-      #     PACT_BROKER_BASIC_AUTH_PASSWORD: pactbroker
-      #     # Database
-      #     PACT_BROKER_DATABASE_URL: sqlite:////tmp/pact_broker.sqlite
-      #   options: >-
-      #     --health-cmd "curl -sSf http://pactbroker:pactbroker@localhost:9292/diagnostic/status/heartbeat"
-      #     --health-interval 10s
-      #     --health-timeout 5s
-      #     --health-retries 5
+      broker:
+        image: pactfoundation/pact-broker:latest
+        ports:
+          - "9292:9292"
+        env:
+          # Basic auth credentials for the Broker
+          PACT_BROKER_ALLOW_PUBLIC_READ: "true"
+          PACT_BROKER_BASIC_AUTH_USERNAME: pactbroker
+          PACT_BROKER_BASIC_AUTH_PASSWORD: pactbroker
+          # Database
+          PACT_BROKER_DATABASE_URL: sqlite:////tmp/pact_broker.sqlite
 
     steps:
       - name: Check nginx is line
@@ -56,4 +51,4 @@ jobs:
 
       - name: Check broker is live
         run: |
-          curl -sSf http://pactbroker:pactbroker@localhost:9292/diagnostic/status/heartbeat
+          curl -sSf http://localhost:9292/diagnostic/status/heartbeat
