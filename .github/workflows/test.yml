@@ -43,13 +43,17 @@ jobs:
           PACT_BROKER_BASIC_AUTH_PASSWORD: pactbroker
           # Database
           PACT_BROKER_DATABASE_URL: sqlite:////tmp/pact_broker.sqlite
-        options: >-
-          --health-cmd "curl -sSf http://localhost:9292/diagnostic/status/heartbeat"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        # options: >-
+        #   --health-cmd "curl -sSf http://localhost:9292/diagnostic/status/heartbeat"
+        #   --health-interval 10s
+        #   --health-timeout 5s
+        #   --health-retries 5
 
     steps:
+      - name: Ports
+        run: |
+          sudo lsof -i -nP | grep LISTEN
+
       - name: Check nginx is line
         run: |
           curl -sSf http://localhost:8080
