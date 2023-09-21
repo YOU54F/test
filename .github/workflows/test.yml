@@ -61,5 +61,5 @@ jobs:
 
       - name: Check broker is live
         run: |
-          curl -sSf http://localhost:9292/diagnostic/status/heartbeat \
-          || curl -sSf http://localhost:9292
+          curl -sSf http://0.0.0.0:9292/diagnostic/status/heartbeat \
+          || curl -sSf http://0.0.0.0:9292
