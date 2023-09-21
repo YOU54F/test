@@ -42,18 +42,18 @@ jobs:
           PACT_BROKER_ALLOW_PUBLIC_READ: "true"
           PACT_BROKER_BASIC_AUTH_USERNAME: pactbroker
           PACT_BROKER_BASIC_AUTH_PASSWORD: pactbroker
+          PACT_BROKER_PUBLIC_HEARTBEAT: "true"
           # Database
           PACT_BROKER_DATABASE_URL: sqlite:////tmp/pact_broker.sqlite
-        # options: >-
-        #   --health-cmd "curl -sSf http://localhost:9292/diagnostic/status/heartbeat"
-        #   --health-interval 10s
-        #   --health-timeout 5s
-        #   --health-retries 5
+        options: >-
+          --health-cmd "curl -sSf http://0.0.0.0:9292/diagnostic/status/heartbeat"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Ports
         run: |
-          sleep 30
           sudo lsof -i -nP | grep LISTEN
 
       - name: Check nginx is line
