@@ -35,7 +35,7 @@ jobs:
       broker:
         image: pactfoundation/pact-broker:latest-multi
         ports:
-          - "9292:9292"
+          - "8123:9292"
         env:
           # Basic auth credentials for the Broker
           PACT_BROKER_ALLOW_PUBLIC_READ: "true"
@@ -44,7 +44,7 @@ jobs:
           # Database
           PACT_BROKER_DATABASE_URL: sqlite:////tmp/pact_broker.sqlite
         options: >-
-          --health-cmd "curl -sSf http://localhost:9292/diagnostic/status/heartbeat"
+          --health-cmd "curl -sSf http://localhost:8123/diagnostic/status/heartbeat"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -56,4 +56,4 @@ jobs:
 
       - name: Check broker is live
         run: |
-          curl -sSf http://localhost:9292/diagnostic/status/heartbeat
+          curl -sSf http://localhost:8123/diagnostic/status/heartbeat
