@@ -53,6 +53,7 @@ jobs:
     steps:
       - name: Ports
         run: |
+          sleep 30
           sudo lsof -i -nP | grep LISTEN
 
       - name: Check nginx is line
