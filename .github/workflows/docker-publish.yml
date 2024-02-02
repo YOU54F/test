@@ -39,12 +39,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
+      - id: lower-repo
+        run: |
+          echo "IMAGE=${GITHUB_REPOSITORY@L}" >> $GITHUB_OUTPUT
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
       - name: Create and publish
         run : |
           docker pull hello-world:latest
           docker tag hello-world:latest ghcr.io/${{ github.owner }}/${{ github.repository }}:latest
-          docker push ghcr.io/${{ github.owner }}/${{ github.repository }}:latest
+          docker push ghcr.io/$IMAGE:latest
 
