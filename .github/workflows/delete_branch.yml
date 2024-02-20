@@ -53,4 +53,4 @@ jobs:
           echo "BRANCH=${BRANCH}" >>$GITHUB_ENV
       - uses: pactflow/actions/delete-branch@v1.2.0
         env:
-          branch: ${{ env.RBANCH }}
+          branch: ${{ env.BRANCH }}
