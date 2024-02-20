@@ -1,0 +1,56 @@
+# Deletes a branch on a pact broker when branch/tag deleted on github
+name: delete_branch
+
+on:
+  delete
+  # Runs your workflow when someone deletes a Git reference (Git branch or tag) in the workflow's repository.
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#delete
+
+env:
+  error_when_not_found: false # (Optional) 
+  application_name: "katacoda-consumer-v3" # The pacticipant name of which the branch belongs to
+  PACT_BROKER_BASE_URL: ${{ secrets.PACT_BROKER_BASE_URL }} # The base URL of the Pact Broker
+  PACT_BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }} # Pactflow Broker API Read/Write token
+          
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Install Pact CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/pact-foundation/pact-ruby-standalone/master/install.sh | sh
+          echo "PATH=${PATH}:${PWD}/pact/bin/" >>$GITHUB_ENV
+
+      - name: Github context
+        run: echo "${{ toJson(github) }}"
+      
+      - name: Get Branch name
+        run: |
+          BRANCH=$(cat ${{ github.event_path }} | jq --raw-output '.ref')
+          echo "BRANCH=${BRANCH}" >>$GITHUB_ENV
+          
+      - name: Delete branch
+        run: |
+          pact-broker delete-branch \
+            --pacticipant "$application_name" \
+            --branch "$BRANCH" \
+            --no-error-when-not-found
+          
+  
+  pact-delete-branch-via-action:
+    # https://github.com/pactflow/actions/tree/main/delete-branch
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Github context
+        run: echo "${{ toJson(github) }}"
+      
+      - name: Get Branch name
+        run: |
+          BRANCH=$(cat ${{ github.event_path }} | jq --raw-output '.ref')
+          echo "BRANCH=${BRANCH}" >>$GITHUB_ENV
+      - uses: pactflow/actions/delete-branch@v1.2.0
+        env:
+          branch: ${{ env.RBANCH }}
