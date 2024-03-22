@@ -14,5 +14,5 @@ jobs:
         curl -LO https://github.com/YOU54F/test/releases/download/0.0.0/packed-broker.zip
         unzip packed-broker.zip
         ls
-        .\\pact-broker\\pact-broker-app.bat
+        ./packed-broker/pact-broker-app.bat
         
