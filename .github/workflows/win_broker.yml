@@ -8,11 +8,30 @@ jobs:
   test_broker:
     runs-on: windows-latest
     steps:
-    - name: 'Resolve Project Dependencies Using Dotnet'
-      shell: pwsh # For Linux, use bash
+    - name: install scoop
+      shell: powershell
+      if: runner.os == 'windows'
+      run: |
+        iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+        "$HOME\scoop\shims\" >> $env:GITHUB_PATH
+    - name: 'Download broker'
+      shell: pwsh
       run: |
         curl -LO https://github.com/YOU54F/test/releases/download/0.0.0/packed-broker.zip
         unzip packed-broker.zip
         ls
-        ./packed-broker/pact-broker-app.bat
-        
+        ./packed-broker/pact-broker-app.bat >& nohup.out &
+        echo $! > $HOME/pid.nohup
+        echo $HOME/pid.nohup
+    - name: install wget and netcat via scoop
+      run: |
+        scoop install wget
+        scoop install netcat
+    - name: Wait for the pact broker to start
+      run: wget -qO- https://raw.githubusercontent.com/eficode/wait-for/$WAIT_FOR_VERSION/wait-for | sh -s -- localhost:9292 -- echo "pact broker is up"
+      env:
+        WAIT_FOR_VERSION: 4df3f9262d84cab0039c07bf861045fbb3c20ab7 # v2.2.3
+      shell: bash
+    # - run: \\pact\\pact-broker-cli.exe publish --broker-base-url http://localhost:9292 -a 1.0.0 ..\\GettingStartedOrderWeb-GettingStartedOrderApi.json
+    - run: kill `cat $HOME/pid.nohup`
+      shell: bash
