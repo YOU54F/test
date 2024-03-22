@@ -24,9 +24,6 @@ jobs:
       shell: bash  # needs bash for nohup redirect, can we use puma pid function?
       # shell: pwsh
       run: |
-        curl -LO https://github.com/YOU54F/test/releases/download/0.0.0/packed-broker.zip
-        unzip packed-broker.zip
-        ls
         ./packed-broker/pact-broker-app.bat >& nohup.out &
         echo $! > $HOME/pid.nohup
         cat $HOME/pid.nohup
