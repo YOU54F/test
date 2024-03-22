@@ -15,7 +15,8 @@ jobs:
         iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
         "$HOME\scoop\shims\" >> $env:GITHUB_PATH
     - name: 'Download broker'
-      shell: pwsh
+      shell: bash
+      # shell: pwsh
       run: |
         curl -LO https://github.com/YOU54F/test/releases/download/0.0.0/packed-broker.zip
         unzip packed-broker.zip
