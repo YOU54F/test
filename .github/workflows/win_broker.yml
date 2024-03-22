@@ -1,0 +1,17 @@
+name: win_broker
+
+on:
+  push:
+    branches: ["win_broker"]
+
+jobs:
+  test_broker:
+    runs-on: windows-latest
+    steps:
+    - name: 'Resolve Project Dependencies Using Dotnet'
+      shell: pwsh # For Linux, use bash
+      run: |
+        curl -LO https://github.com/YOU54F/test/releases/download/0.0.0/packed-broker.zip
+        unzip packed-broker.zip
+        ls
+        
