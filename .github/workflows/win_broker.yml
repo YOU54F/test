@@ -41,7 +41,7 @@ jobs:
         curl -LO https://github.com/YOU54F/hello_cli/releases/download/v0.0.9/pact_cli-x86_64-windows-msvc.exe
         chmod +x pact_cli-x86_64-windows-msvc.exe
         mv pact_cli-x86_64-windows-msvc.exe pact_cli.exe
-    - run: ./pact_cll pact-broker list-latest-pact-versions --broker-base-url http://localhost:9292
+    - run: ./pact_cli pact-broker list-latest-pact-versions --broker-base-url http://localhost:9292
     - run: kill `cat $HOME/pid.nohup`
       if: always()
       shell: bash
