@@ -2,7 +2,6 @@ on: [push, pull_request, workflow_dispatch]
 name: Test
 
 
-
 jobs:
   test:
     strategy:
@@ -18,3 +17,18 @@ jobs:
     steps:
       - name: check ruby
         run: ruby --version
+      - name: download pact_broker
+        if: runner.os == 'macOS'
+        run: curl -L https://api.github.com/repos/pact-foundation/pact_broker/tarball | tar xz --strip=1 '*/example'
+      - name: download pact_broker
+        if: runner.os != 'macOS'
+        run: curl -L https://api.github.com/repos/pact-foundation/pact_broker/tarball | tar xz --strip=1 --wildcards '*/example'
+      - name: run pact_broker 
+        run: |
+          bundle exec puma --pidfile broker.pid -e production
+          cat broker.pid
+        working-dir: example
+      - name: Wait for the broker to start
+        run: wget -qO- https://raw.githubusercontent.com/eficode/wait-for/$WAIT_FOR_VERSION/wait-for | sh -s -- http://localhost:9292 -t 30 -- echo "Database is up"
+        env:
+          WAIT_FOR_VERSION: 4df3f9262d84cab0039c07bf861045fbb3c20ab7 # v2.2.3
