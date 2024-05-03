@@ -27,7 +27,7 @@ jobs:
         run: |
           bundle exec puma --pidfile broker.pid -e production
           cat broker.pid
-        working-dir: example
+        working-directory: example
       - name: Wait for the broker to start
         run: wget -qO- https://raw.githubusercontent.com/eficode/wait-for/$WAIT_FOR_VERSION/wait-for | sh -s -- http://localhost:9292 -t 30 -- echo "Database is up"
         env:
