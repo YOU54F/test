@@ -16,7 +16,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: check ruby
-        run: ruby --version
+        run: |
+          ruby --version
+          gem install bundler
       - name: download pact_broker
         if: runner.os == 'macOS'
         run: curl -L https://api.github.com/repos/pact-foundation/pact_broker/tarball | tar xz --strip=1 '*/example'
@@ -25,6 +27,7 @@ jobs:
         run: curl -L https://api.github.com/repos/pact-foundation/pact_broker/tarball | tar xz --strip=1 --wildcards '*/example'
       - name: run pact_broker 
         run: |
+          bundle install
           bundle exec puma --pidfile broker.pid -e production
           cat broker.pid
         working-directory: example
