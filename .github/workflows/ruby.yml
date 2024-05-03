@@ -1,0 +1,20 @@
+on: [push, pull_request, workflow_dispatch]
+name: Test
+
+
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [
+          ubuntu-latest,
+          macos-12, 
+          macos-14,
+          windows-latest
+          ]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: check ruby
+        run: ruby --version
