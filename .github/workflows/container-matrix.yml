@@ -2,30 +2,57 @@ name: containers
 
 on: [push, workflow_dispatch]
 
+# jobs:
+  # container-test-job:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       image:
+  #         - node
+  #       target_arch:
+  #         - amd64
+  #         - arm64
+  #   container:
+  #     image: ${{ matrix.image }}
+  #     # env:
+  #     #   NODE_ENV: development
+  #     # ports:
+  #     #   - 80
+  #     # volumes:
+  #     #   - my_docker_volume:/volume_mount
+  #     options: --platform ${{ matrix.target_arch }}
+  #   steps:
+  #     - name: Set up QEMU
+  #       uses: docker/setup-qemu-action@v1
+  #       with:
+  #         platforms: ${{ matrix.target_arch }}
+  #     - name: Check for dockerenv file
+  #       run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
 jobs:
-  container-test-job:
+  test:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        image:
-          - node
-        target_arch:
-          - amd64
+        arch:
+          - amd64 
           - arm64
-    container:
-      image: ${{ matrix.image }}
-      # env:
-      #   NODE_ENV: development
-      # ports:
-      #   - 80
-      # volumes:
-      #   - my_docker_volume:/volume_mount
-      options: --platform ${{ matrix.target_arch }}
+        distro:
+          - "ubuntu:jammy"
+          - "ubuntu:focal"
+
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
         with:
-          platforms: ${{ matrix.target_arch }}
-      - name: Check for dockerenv file
-        run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
+          platforms: ${{ matrix.arch }}
+
+      - name: Run in Docker
+        run: |
+          docker run \
+            --rm \
+            -v $(pwd):/${{ github.workspace }} \
+            -w ${{ github.workspace }} \
+            --platform linux/${{ matrix.arch }} \
+            ${{ matrix.distro }} \
+            uname -a
