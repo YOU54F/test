@@ -1,0 +1,27 @@
+name: containers
+
+on: [push, workflow_dispatch]
+
+jobs:
+  container-test-job:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - node
+        target_arch:
+          - amd64
+          - arm64
+    container:
+      image: ${{ matrix.image }}
+      # env:
+      #   NODE_ENV: development
+      # ports:
+      #   - 80
+      # volumes:
+      #   - my_docker_volume:/volume_mount
+      options: --platform ${{ matrix.target_arch }}
+    steps:
+      - name: Check for dockerenv file
+        run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
