@@ -23,5 +23,9 @@ jobs:
       #   - my_docker_volume:/volume_mount
       options: --platform ${{ matrix.target_arch }}
     steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: ${{ matrix.target_arch }}
       - name: Check for dockerenv file
         run: (ls /.dockerenv && echo Found dockerenv) || (echo No dockerenv)
