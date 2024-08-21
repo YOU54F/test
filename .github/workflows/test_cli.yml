@@ -16,5 +16,5 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: pactflow/actions@test_cli_action
+      - uses: pactflow/actions@main
       - run: pact-broker version
