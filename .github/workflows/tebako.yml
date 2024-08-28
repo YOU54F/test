@@ -70,7 +70,7 @@ jobs:
             brew install gnu-sed bash pkg-config bison flex binutils libffi gdbm zlib \
             ncurses double-conversion boost jemalloc fmt glog libevent libsodium lz4 xz \
             libyaml openssl@3 zlib ncurses
-            export PATH="$(brew --prefix bison)/bin:$PATH"
+            export "$(brew --prefix bison)/bin" >> $GITHUB_PATH
 
       - if: runner.os == 'Windows'
         name: install ${{runner.os}} deps
@@ -120,6 +120,8 @@ jobs:
                 echo "CC=${{ 'gcc' }}" >> $GITHUB_ENV
                 echo "CXX=${{ 'g++' }}" >> $GITHUB_ENV
                 echo "TOOLCHAIN=msys" >> $GITHUB_ENV
+            elif [[ "$OS" = "Linux"* ]]; then
+                echo "running on linux"
             else
                 echo "Unsupported operating system $OS"
                 exit 1
