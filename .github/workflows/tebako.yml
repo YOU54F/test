@@ -110,10 +110,8 @@ jobs:
 
       - run: tebako setup
         name: setup press
-        shell: msys2 {0}
         if: runner.os != 'Windows'
 
       - run: tebako press -p --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
         name: press app
-        shell: msys2 {0}
         if: runner.os != 'Windows'
