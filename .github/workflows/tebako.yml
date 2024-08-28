@@ -128,7 +128,7 @@ jobs:
                 exit 1
             fi
       - name: Install pacman packages
-        if: ${{matrix.os}} == 'windows-latest'
+        if: runner.os == 'Windows'
         shell: msys2 {0}
         run: |
           pacman -Syu --needed --noconfirm git tar bison flex pactoys
