@@ -53,14 +53,23 @@ jobs:
             libutfcpp-dev
         if: runner.os == 'Linux'
         name: install ${{runner.os}} deps
-
+      - name: Select XCode
+        if: matrix.os == 'macos-12'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 13.1
+      - name: Select XCode
+        if: matrix.os == 'macos-14'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+            xcode-version: 14.3.1
       - if: runner.os == 'MacOS'
         name: install ${{runner.os}} deps
         run: |
             brew update
             brew install gnu-sed bash pkg-config bison flex binutils libffi gdbm zlib \
             ncurses double-conversion boost jemalloc fmt glog libevent libsodium lz4 xz \
-            libyaml openssl@3
+            libyaml openssl@3 zlib ncurses
             export PATH="$(brew --prefix bison)/bin:$PATH"
 
       - if: runner.os == 'Windows'
@@ -94,6 +103,28 @@ jobs:
             make:p
             libyaml:p
             libxslt:p
+      - name: install ${{runner.os}} deps
+        run: |
+            OS=$(uname -s)
+            if [ "$OS" = "Darwin" ]; then
+                echo "CC=clang" >> $GITHUB_ENV
+                echo "CXX=clang++" >> $GITHUB_ENV
+                if [ "${{ runner.arch }}" = "X64" ]; then
+                    echo "XCODE_VERSION=${{ '13.1' }}" >> $GITHUB_ENV
+                    echo "TOOLCHAIN=macos-x86_64" >> $GITHUB_ENV
+                else
+                    echo "XCODE_VERSION=${{ '14.3.1' }}" >> $GITHUB_ENV
+                    echo "TOOLCHAIN=macos-arm64" >> $GITHUB_ENV
+                fi
+            elif [[ "$OS" = "MINGW64"* ]]; then
+                echo "CC=${{ 'gcc' }}" >> $GITHUB_ENV
+                echo "CXX=${{ 'g++' }}" >> $GITHUB_ENV
+                echo "TOOLCHAIN=msys" >> $GITHUB_ENV
+            else
+                echo "Unsupported operating system $OS"
+                exit 1
+            fi
+
       - run: gem install tebako
         name: install packager
         shell: msys2 {0}
@@ -103,9 +134,6 @@ jobs:
         name: setup press
         shell: msys2 {0}
         if: runner.os == 'Windows' && steps.cache.outputs.cache-hit != 'true'
-        env:
-            CC: gcc
-            CXX: g++
 
       - run: tebako press -p --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
         name: press app
@@ -120,7 +148,7 @@ jobs:
         name: setup press
         if: runner.os != 'Windows' && steps.cache.outputs.cache-hit != 'true'
 
-      - run: tebako press -p --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
+      - run: tebako press --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
         name: press app
         if: runner.os != 'Windows'
       - uses: actions/upload-artifact@v4
