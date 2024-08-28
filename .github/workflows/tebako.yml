@@ -120,6 +120,7 @@ jobs:
                 echo "CC=${{ 'gcc' }}" >> $GITHUB_ENV
                 echo "CXX=${{ 'g++' }}" >> $GITHUB_ENV
                 echo "TOOLCHAIN=msys" >> $GITHUB_ENV
+                echo "MSYSTEM=UCRT64" >> $GITHUB_ENV
             elif [[ "$OS" = "Linux"* ]]; then
                 echo "running on linux"
             else
@@ -137,7 +138,7 @@ jobs:
         shell: msys2 {0}
         if: runner.os == 'Windows' && steps.cache.outputs.cache-hit != 'true'
 
-      - run: tebako press -p --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
+      - run: tebako press --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
         name: press app
         shell: msys2 {0}
         if: runner.os == 'Windows'
