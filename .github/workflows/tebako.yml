@@ -18,8 +18,8 @@ jobs:
         os: [
           macos-14, 
           macos-12, 
-          ubuntu-20.04, 
-          windows-latest
+          # ubuntu-20.04, 
+          # windows-latest
           ]
 
     steps:
@@ -180,37 +180,37 @@ jobs:
           path: pact-cli-${{runner.OS}}-${{runner.arch}}
 
 
-  docker:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-    strategy:
-      fail-fast: false
-      matrix:
-        docker-os: [ubuntu-20.04,alpine-3.17]
+  # docker:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       shell: bash
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       docker-os: [ubuntu-20.04,alpine-3.17]
 
-    steps:
-      - uses: actions/checkout@v4
+  #   steps:
+  #     - uses: actions/checkout@v4
         
-      - name: pull image
-        run: docker pull ghcr.io/tamatebako/tebako-${{ matrix.docker-os }}:latest
-      - name: Docker dependencies
-        id: docker_commands
-        shell: bash
-        run: |
-          if [[ ${{ matrix.docker-os }} == *"alpine"* ]]; then
-            echo "deps=apk del clang && apk add postgresql-dev mariadb-dev && " >> "$GITHUB_OUTPUT"
-          else
-            echo "deps=apt-get update -y && apt-get install -y libpq-dev libmariadb-dev && " >> "$GITHUB_OUTPUT"
-          fi
-      - name: run image
-        run: | 
-          docker run -v $PWD:/mnt/w \
-            -t ghcr.io/tamatebako/tebako-${{ matrix.docker-os }}:latest \
-            /bin/sh -c '${{ steps.docker_commands.outputs.deps }}tebako press --root=/mnt/w/app --entry-point=app --output=/mnt/w/pact-cli-${{ matrix.docker-os }}-${{ runner.arch }}'
+  #     - name: pull image
+  #       run: docker pull ghcr.io/tamatebako/tebako-${{ matrix.docker-os }}:latest
+  #     - name: Docker dependencies
+  #       id: docker_commands
+  #       shell: bash
+  #       run: |
+  #         if [[ ${{ matrix.docker-os }} == *"alpine"* ]]; then
+  #           echo "deps=apk del clang && apk add postgresql-dev mariadb-dev && " >> "$GITHUB_OUTPUT"
+  #         else
+  #           echo "deps=apt-get update -y && apt-get install -y libpq-dev libmariadb-dev && " >> "$GITHUB_OUTPUT"
+  #         fi
+  #     - name: run image
+  #       run: | 
+  #         docker run -v $PWD:/mnt/w \
+  #           -t ghcr.io/tamatebako/tebako-${{ matrix.docker-os }}:latest \
+  #           /bin/sh -c '${{ steps.docker_commands.outputs.deps }}tebako press --root=/mnt/w/app --entry-point=app --output=/mnt/w/pact-cli-${{ matrix.docker-os }}-${{ runner.arch }}'
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: pact-cli-${{ matrix.docker-os }}-${{ runner.arch }}
-          path: pact-cli-${{ matrix.docker-os }}-${{ runner.arch }}
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: pact-cli-${{ matrix.docker-os }}-${{ runner.arch }}
+  #         path: pact-cli-${{ matrix.docker-os }}-${{ runner.arch }}
