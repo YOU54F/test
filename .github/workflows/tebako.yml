@@ -194,7 +194,7 @@ jobs:
         shell: bash
         run: |
           if [[ ${{ matrix.docker-os }} == *"alpine"* ]]; then
-            echo "deps=apk add postgresql-libs mariadb-dev && " >> "$GITHUB_OUTPUT"
+            echo "deps=apk add postgresql-dev mariadb-dev && " >> "$GITHUB_OUTPUT"
           else
             echo "deps=apt-get update -y && apt-get install -y libpq-dev libmariadb-dev && " >> "$GITHUB_OUTPUT"
           fi
