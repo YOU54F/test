@@ -21,7 +21,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-
+        
+      - uses: actions/cache@v4
+        id: cache
+        with:
+          path: $HOME/.tebako/
+          key: ${{ matrix.os }}
 
       - name: Setup ruby
         uses: ruby/setup-ruby@master
@@ -97,7 +102,10 @@ jobs:
       - run: tebako setup
         name: setup press
         shell: msys2 {0}
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && steps.cache.outputs.cache-hit != 'true'
+        env:
+            CC: gcc
+            CXX: g++
 
       - run: tebako press -p --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
         name: press app
@@ -110,8 +118,12 @@ jobs:
 
       - run: tebako setup
         name: setup press
-        if: runner.os != 'Windows'
+        if: runner.os != 'Windows' && steps.cache.outputs.cache-hit != 'true'
 
       - run: tebako press -p --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
         name: press app
         if: runner.os != 'Windows'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pact-cli-${{runner.OS}}-${{runner.arch}}
+          path: pact-cli-${{runner.OS}}-${{runner.arch}}
