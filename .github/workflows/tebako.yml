@@ -32,6 +32,7 @@ jobs:
         uses: ruby/setup-ruby@master
         with:
             ruby-version: '3.2.5'
+        if: runner.os != 'Windows'
             
       - run: |
             sudo apt install -y gcc-10 g++-10
