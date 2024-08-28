@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          submodules: true
 
       - name: Download prebuilds
         uses: actions/download-artifact@v3
@@ -31,16 +31,16 @@ jobs:
             ruby-version: '3.2.5'
             
       - run: |
-            apt install -y gcc-10 g++-10
-            update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
-            update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
-            apt-get remove --purge --auto-remove cmake
-            apt-get update
-            apt-get install -y software-properties-common lsb-release curl
-            apt-get clean all
+            sudo apt install -y gcc-10 g++-10
+            sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
+            sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
+            sudo apt-get remove --purge --auto-remove cmake
+            sudo apt-get update
+            sudo apt-get install -y software-properties-common lsb-release curl
+            sudo apt-get clean all
             curl https://apt.kitware.com/kitware-archive.sh | bash
-            apt-get install 
-            apt-get -y install sudo git curl build-essential pkg-config bison flex autoconf  \
+            sudo apt-get install 
+            sudo apt-get -y install sudo git curl build-essential pkg-config bison flex autoconf  \
             binutils-dev libevent-dev acl-dev libfmt-dev libjemalloc-dev libiberty-dev    \
             libdouble-conversion-dev liblz4-dev liblzma-dev libssl-dev libunwind-dev      \
             libboost-filesystem-dev libboost-program-options-dev libboost-system-dev      \
@@ -63,10 +63,35 @@ jobs:
 
       - if: runner.os == 'Windows'
         name: install ${{runner.os}} deps
-        run: |
-            ridk enable ucrt64
-            pacman -S git tar bison flex toolchain make cmake boost diffutils libevent double-conversion fmt glog dlfcn gtest autotools ncurses libyaml
-    
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ucrt64
+          path-type: minimal
+          update: true
+          install: >-
+            git
+            tar
+            bison
+            flex
+          pacboy: >-
+            cmake:p
+            boost:p
+            diffutils:p
+            libevent:p
+            double-conversion:p
+            fmt:p
+            glog:p
+            dlfcn:p
+            ninja:p
+            gtest:p
+            autotools:p
+            ncurses:p
+            ruby:p
+            toolchain:p
+            openssl:p
+            make:p
+            libyaml:p
+            libxslt:p
       - run: gem install tebako
         name: install packager
 
