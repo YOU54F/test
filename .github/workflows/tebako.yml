@@ -73,9 +73,7 @@ jobs:
         name: install ${{runner.os}} deps
         run: |
             brew update
-            brew install gnu-sed bash pkg-config bison flex binutils libffi gdbm zlib \
-            ncurses double-conversion boost jemalloc fmt glog libevent libsodium lz4 xz \
-            libyaml openssl@3 zlib ncurses libpq postgresql@14
+            brew install bison flex binutils libffi double-conversion boost jemalloc fmt glog gnu-sed bash
 
       - if: runner.os == 'Windows'
         name: install ${{runner.os}} deps
