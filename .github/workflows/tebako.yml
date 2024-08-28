@@ -191,9 +191,9 @@ jobs:
         run: docker pull ghcr.io/tamatebako/tebako-${{ matrix.docker-os }}:latest
       - name: run image
         run: | 
-          docker run -v $PWD/app:/mnt/w \
+          docker run -v $PWD:/mnt/w \
             -t ghcr.io/tamatebako/tebako-${{ matrix.docker-os }}:latest \
-            tebako press --root=app --entry-point=app --output=pact-cli-${{ matrix.docker-os }}-${{ runner.arch }}
+            tebako press --root=--root=/mnt/w/app --entry-point=app --output=--root=/mnt/w/pact-cli-${{ matrix.docker-os }}-${{ runner.arch }}
 
       - uses: actions/upload-artifact@v4
         with:
