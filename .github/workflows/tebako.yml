@@ -1,0 +1,41 @@
+name: Package app
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, macos-12, ubuntu-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download prebuilds
+        uses: actions/download-artifact@v3
+
+      - name: Setup ruby
+        uses: ruby/setup-ruby@master
+        with:
+            ruby-version: '3.2.5'
+
+      - run: gem install tebako
+        name: install packager
+
+      - run: tebako setup
+        name: setup press
+
+
+      - run: tebako press -p --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
+        name: press app
