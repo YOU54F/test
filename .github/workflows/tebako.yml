@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14, macos-12, ubuntu-latest, windows-latest]
+        os: [macos-14, macos-12, ubuntu-20.04, windows-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +29,44 @@ jobs:
         uses: ruby/setup-ruby@master
         with:
             ruby-version: '3.2.5'
+            
+      - run: |
+            apt install -y gcc-10 g++-10
+            update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
+            update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
+            apt-get remove --purge --auto-remove cmake
+            apt-get update
+            apt-get install -y software-properties-common lsb-release curl
+            apt-get clean all
+            curl https://apt.kitware.com/kitware-archive.sh | bash
+            apt-get install 
+            apt-get -y install sudo git curl build-essential pkg-config bison flex autoconf  \
+            binutils-dev libevent-dev acl-dev libfmt-dev libjemalloc-dev libiberty-dev    \
+            libdouble-conversion-dev liblz4-dev liblzma-dev libssl-dev libunwind-dev      \
+            libboost-filesystem-dev libboost-program-options-dev libboost-system-dev      \
+            libboost-iostreams-dev  libboost-date-time-dev libboost-context-dev           \
+            libboost-regex-dev libboost-thread-dev libbrotli-dev libdwarf-dev libelf-dev  \
+            libgoogle-glog-dev libffi-dev libgdbm-dev libyaml-dev libncurses-dev          \
+            libreadline-dev libncurses-dev libreadline-dev ruby-dev ruby-bundler          \
+            libutfcpp-dev
+        if: runner.os == 'Linux'
+        name: install ${{runner.os}} deps
 
+      - if: runner.os == 'MacOS'
+        name: install ${{runner.os}} deps
+        run: |
+            brew update
+            brew install gnu-sed bash pkg-config bison flex binutils libffi gdbm zlib \
+            ncurses double-conversion boost jemalloc fmt glog libevent libsodium lz4 xz \
+            libyaml openssl@3
+            export PATH="$(brew --prefix bison)/bin:$PATH"
+
+      - if: runner.os == 'Windows'
+        name: install ${{runner.os}} deps
+        run: |
+            ridk enable ucrt64
+            pacman -S git tar bison flex toolchain make cmake boost diffutils libevent double-conversion fmt glog dlfcn gtest autotools ncurses libyaml
+    
       - run: gem install tebako
         name: install packager
 
