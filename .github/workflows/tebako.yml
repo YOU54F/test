@@ -22,8 +22,6 @@ jobs:
         with:
           submodules: true
 
-      - name: Download prebuilds
-        uses: actions/download-artifact@v3
 
       - name: Setup ruby
         uses: ruby/setup-ruby@master
@@ -38,9 +36,8 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y software-properties-common lsb-release curl
             sudo apt-get clean all
-            curl https://apt.kitware.com/kitware-archive.sh | bash
-            sudo apt-get install 
-            sudo apt-get -y install sudo git curl build-essential pkg-config bison flex autoconf  \
+            curl https://apt.kitware.com/kitware-archive.sh | sudo bash
+            sudo apt-get -y install git curl build-essential pkg-config bison flex autoconf  \
             binutils-dev libevent-dev acl-dev libfmt-dev libjemalloc-dev libiberty-dev    \
             libdouble-conversion-dev liblz4-dev liblzma-dev libssl-dev libunwind-dev      \
             libboost-filesystem-dev libboost-program-options-dev libboost-system-dev      \
@@ -94,10 +91,29 @@ jobs:
             libxslt:p
       - run: gem install tebako
         name: install packager
+        shell: msys2 {0}
+        if: runner.os == 'Windows'
 
       - run: tebako setup
         name: setup press
-
+        shell: msys2 {0}
+        if: runner.os == 'Windows'
 
       - run: tebako press -p --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
         name: press app
+        shell: msys2 {0}
+        if: runner.os == 'Windows'
+
+      - run: gem install tebako
+        name: install packager
+        if: runner.os != 'Windows'
+
+      - run: tebako setup
+        name: setup press
+        shell: msys2 {0}
+        if: runner.os != 'Windows'
+
+      - run: tebako press -p --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
+        name: press app
+        shell: msys2 {0}
+        if: runner.os != 'Windows'
