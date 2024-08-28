@@ -127,7 +127,16 @@ jobs:
                 echo "Unsupported operating system $OS"
                 exit 1
             fi
-
+      - name: Install pacman packages
+        if: ${{matrix.os}} == 'windows-latest'
+        shell: msys2 {0}
+        run: |
+          pacman -Syu --needed --noconfirm git tar bison flex pactoys
+          pacboy sync --needed --noconfirm cmake:p boost:p diffutils:p  \
+            libevent:p double-conversion:p fmt:p glog:p dlfcn:p ninja:p \
+            gtest:p autotools:p ncurses:p ruby:p toolchain:p openssl:p  \
+            make:p libyaml:p libxslt:p
+      
       - run: gem install tebako
         name: install packager
         shell: msys2 {0}
