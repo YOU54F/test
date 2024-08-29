@@ -16,10 +16,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [
-          macos-14, 
-          macos-13, 
+          # macos-14, 
+          # macos-13, 
           # ubuntu-20.04, 
-          # windows-latest
+          windows-latest
           ]
 
     steps:
@@ -118,15 +118,6 @@ jobs:
           echo "CXX=g++" >> $GITHUB_ENV
           echo "TOOLCHAIN=msys" >> $GITHUB_ENV
           echo "MSYSTEM=UCRT64" >> $GITHUB_ENV
-      # - name: Install pacman packages
-      #   if: runner.os == 'Windows'
-      #   shell: msys2 {0}
-      #   run: |
-      #     pacman -Syu --needed --noconfirm git tar bison flex pactoys
-      #     pacboy sync --needed --noconfirm cmake:p boost:p diffutils:p  \
-      #       libevent:p double-conversion:p fmt:p glog:p dlfcn:p ninja:p \
-      #       gtest:p autotools:p ncurses:p ruby:p toolchain:p openssl:p  \
-      #       make:p libyaml:p libxslt:p
       
       - run: gem install tebako
         name: install packager
@@ -148,14 +139,14 @@ jobs:
 
 
         # mysql2 workaround for windows - https://github.com/brianmario/mysql2/issues/1265#issuecomment-1200407838
-      # - run: |
-      #     touch /ucrt64/bin/libmysql.lib
-      #     cp /ucrt64/bin/libmariadb.dll /ucrt64/bin/libmysql.dll
-      #     gem install mysql2 -- --with-mysql-lib="/ucrt64/bin" --with-mysql-include="/ucrt64/include/mariadb"
-      #     tebako press --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
-      #   name: press app
-      #   shell: msys2 {0}
-      #   if: runner.os == 'Windows'
+      - run: |
+          touch /ucrt64/bin/libmysql.lib
+          cp /ucrt64/bin/libmariadb.dll /ucrt64/bin/libmysql.dll
+          gem install mysql2 -- --with-mysql-lib="/ucrt64/bin" --with-mysql-include="/ucrt64/include/mariadb"
+          tebako press --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
+        name: press app
+        shell: msys2 {0}
+        if: runner.os == 'Windows'
 
 
       - run: tebako press --root=app --entry-point=app --output=pact-cli-${{runner.OS}}-${{runner.arch}}
