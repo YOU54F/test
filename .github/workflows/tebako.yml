@@ -154,9 +154,16 @@ jobs:
         if: runner.os != 'Windows'
 
       - uses: actions/upload-artifact@v4
+        if: runner.os != 'Windows'
         with:
           name: pact-cli-${{runner.OS}}-${{runner.arch}}
           path: pact-cli-${{runner.OS}}-${{runner.arch}}
+
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'Windows'
+        with:
+          name: pact-cli-${{runner.OS}}-${{runner.arch}}.exe
+          path: pact-cli-${{runner.OS}}-${{runner.arch}}.exe
 
 
   # docker:
